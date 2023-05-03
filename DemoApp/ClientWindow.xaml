@@ -1,0 +1,74 @@
+﻿<Window x:Class="DemoApp.ClientWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Товары" Height="500" Width="700" MinHeight="300" MinWidth="300" Icon="/Resources/icon.ico">
+    <Window.Resources>
+        <BitmapImage x:Key="picture" UriSource="/Resources/picture.png"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.3*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="0.15*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Background="#76e383" Grid.ColumnSpan="2">
+            <Label Content="Просмотр товаров" HorizontalAlignment="Center" Height="45"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <ComboBox x:Name="DiscountFilter" Height="30" Width="160" SelectionChanged="DiscountFilter_SelectionChanged" FontSize="14"></ComboBox>
+                <ComboBox x:Name="PriceFilter" Grid.Column="1" Height="30" Width="160" SelectionChanged="PriceFilter_SelectionChanged" FontSize="14"></ComboBox>
+                <TextBox x:Name="SearchTextBox" Height="30" Grid.Column="2" TextChanged="SearchTextBox_TextChanged"></TextBox>
+            </Grid>
+        </StackPanel>
+        <Button VerticalAlignment="Top" x:Name="BackButton" HorizontalAlignment="Left" Height="40" Content="Назад" Click="BackButton_Click"/>
+        <WrapPanel Grid.Row="2" Background="#76e383" Grid.ColumnSpan="2">
+            <Label Name="recordAmountLabel" Content=" "/>
+        </WrapPanel>
+        <ListView ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" x:Name="ProductsList" Grid.Row="1" Grid.ColumnSpan="2">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="Black" BorderThickness="1">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.25*"></RowDefinition>
+                                <RowDefinition Height="0.25*"></RowDefinition>
+                                <RowDefinition Height="0.25*"></RowDefinition>
+                                <RowDefinition Height="0.25*"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.RowSpan="4" Grid.Column="0" BorderBrush="Black" HorizontalAlignment="Center">
+                                <Image Source="{Binding Path=ProductPhoto, FallbackValue={StaticResource picture}}"/>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="1"  BorderBrush="Black" HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding ProductName}"/>
+                            </Border>
+                            <Border Grid.Row="2" Grid.RowSpan="3" Grid.Column="1" BorderBrush="Black" HorizontalAlignment="Center">
+                                <TextBlock  Text="{Binding ProductDescription}"/>
+                            </Border>
+                            <Border Grid.Row="1" Grid.Column="3" BorderBrush="Black" HorizontalAlignment="Center">
+                                <TextBlock  Text="{Binding ProductCost}"/>
+                            </Border>
+                            <Border Grid.Row="2" Grid.Column="3" BorderBrush="Black" HorizontalAlignment="Center">
+                                <TextBlock  Text="{Binding ProductDiscountAmount}"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Window>

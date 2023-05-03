@@ -1,0 +1,22 @@
+﻿<Window x:Class="DemoApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Окно авторизации" Height="400" Width="300" MinHeight="300" MinWidth="250" Icon="/Resources/icon.ico">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.15*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Background="#76e383" HorizontalAlignment="Stretch">
+            <Label Content="Авторизация" HorizontalAlignment="Center"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center">
+            <Label Content="Введите логин:"/>
+            <TextBox x:Name="LoginTextBox"/>
+            <Label Content="Введите пароль:"/>
+            <PasswordBox x:Name="UserPasswordBox"/>
+            <Button x:Name="LogInButton" Content="Войти" Click="LogInButton_Click"/>
+            <Button x:Name="LogInAsGuestButton" Content="Войти как гость" FontSize="16" Click="LogInAsGuestButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

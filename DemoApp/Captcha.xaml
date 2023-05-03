@@ -1,0 +1,14 @@
+﻿<Window x:Class="DemoApp.Captcha"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Captcha" Height="300" Width="300">
+    <Grid>
+        <StackPanel Background="#76e383">
+            <Label Content="Введите капчу:"/>
+            <Label x:Name="CaptchaLabel" Content="Нажмите 'обновить'" HorizontalAlignment="Center"/>
+            <TextBox x:Name="CaptchaTextBox"/>
+            <Button x:Name="InputButton" Content="Ввести" Click="InputButton_Click"/>
+            <Button x:Name="UpdateCaptcha" Content="Обновить" Click="UpdateCaptcha_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
