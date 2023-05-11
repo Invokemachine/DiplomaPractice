@@ -1,0 +1,65 @@
+﻿<Window x:Class="DemoApp.EditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DemoApp"
+        mc:Ignorable="d"
+        Title="EditWindow" Height="650" Width="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.1*"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <WrapPanel  Background="#76e383">
+            <Button x:Name="BackButton" Content="Назад" HorizontalAlignment="Left" Click="BackButton_Click"/>
+            <Label Content="Редактирование" HorizontalAlignment="Center"/>
+        </WrapPanel>
+        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Label Content="Артикул:" FontSize="14" Height="37" Margin="1" Grid.Column="0" Grid.Row="0"/>
+            <TextBox x:Name="ArticleTextBox" Height="25" Margin="1" Grid.Column="1" Grid.Row="0" Width="auto"/>
+            <Label Content="Название:" FontSize="14" Height="37" Margin="1" Grid.Column="0" Grid.Row="1"/>
+            <TextBox x:Name="NameTextBox" Height="25" Margin="1" Grid.Column="1" Grid.Row="1" Width="auto"/>
+            <Label Content="UnitTypeId:" FontSize="14" Height="37" Margin="1" Grid.Column="0" Grid.Row="2"/>
+            <ComboBox x:Name="UnitTypeIdComboBox" SelectionChanged="UnitTypeIdComboBox_SelectionChanged" Grid.Row="2" Grid.Column="1" Height="35"/>
+            <Label Content="Цена:" FontSize="14" Height="37" Margin="1" Grid.Column="0" Grid.Row="3"/>
+            <TextBox x:Name="PriceTextBox" Height="25" Margin="1" Grid.Column="1" Grid.Row="3" Width="auto"/>
+            <Label Content="Макс. скидка:" FontSize="14" Height="37" Margin="1" Grid.Column="0" Grid.Row="4"/>
+            <TextBox x:Name="MaxDiscountTextBox" Height="25" Margin="1" Grid.Column="1" Grid.Row="4" Width="auto"/>
+            <Label Content="Id производителя:" FontSize="14" Height="37" Margin="1" Grid.Column="0" Grid.Row="5" Width="auto"/>
+            <ComboBox x:Name="ManufacturerComboBox" Height="35" Grid.Column="1" Grid.Row="5" SelectionChanged="ManufacturerComboBox_SelectionChanged"/>
+            <Label Content="Id поставщика:" FontSize="14" Height="37" Margin="1" Grid.Column="0" Grid.Row="6"/>
+            <ComboBox x:Name="SupplierIdComboBox" SelectionChanged="SupplierIdComboBox_SelectionChanged" Grid.Column="1" Grid.Row="6" Height="35"/>
+            <Label Content="Id категории товара:" FontSize="14" Height="37" Margin="1"  Grid.Column="0" Grid.Row="7"/>
+            <ComboBox x:Name="CategoryIdComboBox" SelectionChanged="CategoryIdComboBox_SelectionChanged" Grid.Column="1" Grid.Row="7" Height="35"/>
+            <Label Content="Действ. скидки:" FontSize="14" Height="37" Margin="1" Grid.Column="0" Grid.Row="8"/>
+            <TextBox x:Name="DiscountTextBox" Height="25" Margin="1" Grid.Column="1" Grid.Row="8" Width="auto"/>
+            <Label Content="Количество:" FontSize="14" Height="37" Margin="1"  Grid.Column="0" Grid.Row="9"/>
+            <TextBox x:Name="AmountInStockTextBox" Height="25" Margin="1" Grid.Column="1" Grid.Row="9" Width="auto"/>
+            <Label Content="Описание:" FontSize="14" Height="37" Margin="1"  Grid.Column="0" Grid.Row="10"/>
+            <TextBox x:Name="DescriptionTextBox" Height="25" Margin="1" Grid.Column="1" Grid.Row="10" Width="auto"/>
+            <Image x:Name="Picture" Height="40" Width="65" Margin="3" Source="/Resources/picture.png" Grid.Column="0" Grid.Row="11" HorizontalAlignment="Left" Stretch="Fill"/>
+            <Button x:Name="ImageButoon" Content="Выбрать фото" Height="40" Grid.Row="11" Grid.ColumnSpan="2" Click="ImageButoon_Click"/>
+            <Button x:Name="SaveButton" Content="Сохранить" Grid.Row="12" Grid.ColumnSpan="2" Click="SaveButton_Click"/>
+        </Grid>
+    </Grid>
+</Window>

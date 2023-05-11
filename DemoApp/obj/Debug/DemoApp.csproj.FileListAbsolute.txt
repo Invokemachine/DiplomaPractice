@@ -75,3 +75,8 @@ C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\obj\D
 C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\obj\Debug\DemoApp.csproj.CopyComplete
 C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\obj\Debug\DemoApp.exe
 C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\obj\Debug\DemoApp.pdb
+C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\obj\Debug\DemoApp_MarkupCompile.lref
+C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\obj\Debug\AddWindow.g.cs
+C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\obj\Debug\AddWindow.baml
+C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\obj\Debug\EditWindow.g.cs
+C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\obj\Debug\EditWindow.baml

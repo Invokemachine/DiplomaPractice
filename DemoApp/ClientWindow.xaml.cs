@@ -19,15 +19,17 @@ namespace DemoApp
     /// </summary>
     public partial class ClientWindow : Window
     {
+        private User _currentUser = new User();
+        public static Product _currentProduct;
         user25Entities1 dbmodel = new user25Entities1();
         List<Product> productList = new List<Product>();
 
-        public ClientWindow()
+        public ClientWindow(User user)
         {
             InitializeComponent();
-            productList = dbmodel.Product.ToList();
 
-            DiscountFilter.ItemsSource = new List<string>()
+            productList = dbmodel.Product.ToList();
+                DiscountFilter.ItemsSource = new List<string>()
             {
                 "0-10%","10-15%","15-100%", "Все диапазоны"
             };
@@ -35,13 +37,11 @@ namespace DemoApp
             {
                 "По возрастанию", "По убыванию"
             };
-
             ProductsList.ItemsSource = productList;
 
             foreach (Product product in productList)
             {
                 product.ProductPhoto = $"/Resources/{product.ProductPhoto}";
-
                 foreach (ProductManufacturer manufacturer in dbmodel.ProductManufacturer)
                 {
                     if (manufacturer.ProductManufacturerID == product.ProductManufacturerID)
@@ -50,11 +50,35 @@ namespace DemoApp
                     }
                 }
             }
+            _currentUser = user;
             updateRecordAmount();
+            if(_currentUser != null)
+            {
+                if (_currentUser.RoleID == 2)
+                    AddButton.IsEnabled = true;
+                else
+                    AddButton.IsEnabled = false;
+            }
+        }
+
+        private void EnableButtons()
+        {
+            if (_currentUser.RoleID == 2 && ProductsList.SelectedItem != null)
+            {
+                DeleteButton.IsEnabled = true;
+                EditButton.IsEnabled = true;
+            }
+            else
+            {
+                AddButton.IsEnabled = false;
+                DeleteButton.IsEnabled = false;
+                EditButton.IsEnabled = false;
+            }
         }
 
         private void PriceFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            EnableButtons();
             productList = dbmodel.Product.ToList();
             switch (PriceFilter.SelectedIndex)
             {
@@ -75,6 +99,7 @@ namespace DemoApp
 
         private void DiscountFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            EnableButtons();
             productList = dbmodel.Product.ToList();
 			switch (DiscountFilter.SelectedIndex)
 			{
@@ -116,6 +141,7 @@ namespace DemoApp
 
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            EnableButtons();
             productList = productList.Where(p => p.ProductName.ToLower().Contains(SearchTextBox.Text.ToLower())).ToList();
             ProductsList.ItemsSource = productList;
             updateRecordAmount();
@@ -126,6 +152,47 @@ namespace DemoApp
             MainWindow mainWindow = new MainWindow();
             mainWindow.Show();
             Close();
+        }
+
+        private void ProductsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            EnableButtons();
+            _currentProduct = ProductsList.SelectedItem as Product;
+        }
+
+        private void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            AddWindow addWindow = new AddWindow(new Product(), _currentUser);
+            addWindow.Show();
+            Close();
+        }
+
+        private void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+            EditWindow editWindow = new EditWindow(ProductsList.SelectedItem as Product, _currentUser);
+            editWindow.Show();
+            Close();
+        }
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            var driversForDeleting = ProductsList.SelectedItems.Cast<Product>().ToList();
+
+            if (MessageBox.Show($"Вы точно хотите удалить следующие {driversForDeleting.Count} элементов?", "Внимание!",
+                MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    dbmodel.Product.RemoveRange(driversForDeleting);
+                    dbmodel.SaveChanges();
+                    MessageBox.Show("Данные удалены!", "Окно оповещений");
+                    ProductsList.ItemsSource = dbmodel.Product.ToList();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message.ToString());
+                }
+            }
         }
     }
 }

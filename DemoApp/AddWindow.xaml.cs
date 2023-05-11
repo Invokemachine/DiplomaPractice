@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,19 +20,21 @@ namespace DemoApp
     /// <summary>
     /// Логика взаимодействия для AddEditWindow.xaml
     /// </summary>
-    public partial class AddEditWindow : Window
+    public partial class AddWindow : Window
     {
         user25Entities1 dbmodel = new user25Entities1();
         List<Product> productList = new List<Product>();
-        Product _currentProduct;
+        public Product _currentProduct;
+        User _currentUser;
 
-        public AddEditWindow(Product product)
+        public AddWindow(Product product, User currentUser)
         {
             InitializeComponent();
+            LoadComboBoxes();
+            InitImage();
+            _currentUser = currentUser;
             _currentProduct = product;
             productList = dbmodel.Product.ToList();
-            LoadComboBoxes();
-            InitTextBoxes();
         }
 
         private void LoadComboBoxes()
@@ -84,17 +89,6 @@ namespace DemoApp
             _currentProduct.ProductCategory = (from pc in dbmodel.ProductCategory where pc.ProductCategoryName == CategoryIdComboBox.Text select pc).FirstOrDefault();
         }
 
-        private void InitTextBoxes()
-        {
-            ArticleTextBox.Text = _currentProduct.ProductArticleNumber;
-            NameTextBox.Text = _currentProduct.ProductName;
-            PriceTextBox.Text = _currentProduct.ProductCost.ToString();
-            MaxDiscountTextBox.Text = _currentProduct.ProductMaxDiscountAmount.ToString();
-            DiscountTextBox.Text = _currentProduct.ProductDiscountAmount.ToString();
-            AmountInStockTextBox.Text = _currentProduct.ProductQuantityInStock.ToString();
-            DescriptionTextBox.Text = _currentProduct.ProductDescription;
-        }
-
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             StringBuilder errors = new StringBuilder();
@@ -139,6 +133,74 @@ namespace DemoApp
                     MessageBox.Show(ex.Message.ToString());
                 }
             }
+        }
+
+        private void ImageButoon_Click(object sender, RoutedEventArgs e)
+        {
+            var ofd = new OpenFileDialog();
+            ofd.DefaultExt = ".jpg";
+            ofd.Filter = "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
+
+            Nullable<bool> result = ofd.ShowDialog();
+
+            if (result == true)
+            {
+                string filename = ofd.FileName;
+                string currentDir = AppDomain.CurrentDomain.BaseDirectory;
+                FileInfo fileInfo = new FileInfo(currentDir);
+                DirectoryInfo dirInfo = fileInfo.Directory.Parent;
+                string parentDirName = dirInfo.Name;
+
+                fileInfo = new FileInfo(parentDirName);
+                dirInfo = fileInfo.Directory.Parent;
+                parentDirName = dirInfo.Name;
+
+                fileInfo = new FileInfo(dirInfo.ToString());
+                dirInfo = fileInfo.Directory.Parent;
+                parentDirName = dirInfo.ToString() + "\\Resources\\" + ofd.SafeFileName;
+
+                System.IO.File.Copy(filename, parentDirName);
+
+                _currentProduct.ProductPhoto = ofd.SafeFileName;
+                dbmodel.Entry(_currentProduct).State = EntityState.Modified;
+                dbmodel.SaveChanges();
+
+                InitImage();
+            }
+        }
+        private void InitImage()
+        {
+            BitmapImage imageSource = new BitmapImage();
+            imageSource.BeginInit();
+            try
+            {
+                if (_currentProduct != null)
+                {
+                    imageSource.UriSource = new Uri(@"/DemoApp;component" + _currentProduct.ProductPhoto);
+                    BitmapImage picture = new BitmapImage();
+                    picture.BeginInit();
+                    picture.UriSource = new Uri(@"/DemoApp;component/Resources/", UriKind.Relative);
+                    if (imageSource.UriSource == picture.UriSource)
+                    {
+                        imageSource.UriSource = new Uri(@"/DemoApp;component/Resources/picture.png", UriKind.Relative);
+                    }
+                }
+                else
+                    imageSource.UriSource = new Uri(@"/DemoApp;component/Resources/picture.png");
+            }
+            catch
+            {
+                return;
+            }
+            imageSource.EndInit();
+            Picture.Source = imageSource;
+        }
+
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            ClientWindow clientWindow = new ClientWindow(_currentUser);
+            clientWindow.Show();
+            Close();
         }
     }
 }

@@ -36,7 +36,7 @@ namespace DemoApp
                         if (user.UserLogin == LoginTextBox.Text && user.UserPassword == UserPasswordBox.Password)
                         {
                             MessageBox.Show("Авторизация успешна!", "Внимание");
-                            ClientWindow clientWindow = new ClientWindow();
+                            ClientWindow clientWindow = new ClientWindow(user);
                             clientWindow.Show();
                             Close();
                         }
@@ -84,7 +84,7 @@ namespace DemoApp
 
         private void LogInAsGuestButton_Click(object sender, RoutedEventArgs e)
         {
-            ClientWindow clientWindow = new ClientWindow();
+            ClientWindow clientWindow = new ClientWindow(null);
             clientWindow.Show();
             Close();
         }
