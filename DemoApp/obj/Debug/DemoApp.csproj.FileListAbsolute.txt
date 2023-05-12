@@ -82,3 +82,9 @@ C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\obj\D
 C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\obj\Debug\EditWindow.baml
 C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\obj\Debug\OrderWindow.g.cs
 C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\obj\Debug\OrderWindow.baml
+C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\bin\Debug\Spire.Doc.dll
+C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\bin\Debug\Spire.Pdf.dll
+C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\bin\Debug\Microsoft.mshtml.dll
+C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\bin\Debug\Spire.Doc.xml
+C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\bin\Debug\Spire.Pdf.xml
+C:\Users\AzatYTebiLove\Desktop\DiplomaPracticeTask\DiplomaPractice\DemoApp\bin\Debug\ru\EntityFramework.SqlServer.resources.dll

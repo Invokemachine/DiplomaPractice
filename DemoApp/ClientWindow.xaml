@@ -33,7 +33,7 @@
         <WrapPanel Grid.Row="2" Background="#76e383" Grid.ColumnSpan="2">
             <Label Name="recordAmountLabel" Content=" "/>
             <Button x:Name="DeleteButton" Content="Удалить товар" Click="DeleteButton_Click" IsEnabled="False"/>
-            <Button x:Name="NewOrderButton" Content="Новый заказ" Click="NewOrderButton_Click"/>
+            <Button x:Name="NewOrderButton" Content="К заказу" Click="NewOrderButton_Click" Visibility="Hidden"/>
         </WrapPanel>
         <StackPanel Grid.Column="1" HorizontalAlignment="Right">
             <Button x:Name="AddButton" Content="Добавить товар" Click="AddButton_Click"/>

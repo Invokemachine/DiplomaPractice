@@ -13,6 +13,13 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Xml.Linq;
+using Spire.Doc;
+using Spire.Doc.Documents;
+using Spire.Doc.Fields;
+using Paragraph = Spire.Doc.Documents.Paragraph;
+using Section = Spire.Doc.Section;
+using TextRange = Spire.Doc.Fields.TextRange;
 
 namespace DemoApp
 {
@@ -37,7 +44,6 @@ namespace DemoApp
             _currentUser = user;
             _currentOrder = order;
             LoadComboBoxes();
-
             if (order != null)
             {
                 _currentOrder = order;
@@ -45,6 +51,9 @@ namespace DemoApp
             InitProductOrder();
             InitList();
         }
+        /// <summary>
+        /// Загрузка пунктов выдачи в комбобокс
+        /// </summary>
         private void LoadComboBoxes()
         {
             using (var db = new user25Entities1())
@@ -55,7 +64,9 @@ namespace DemoApp
                     PointOfIssueComboBox.Items.Add(pickupPoint.Address);
             }
         }
-
+        /// <summary>
+        /// Метод инициализации списка добавленных в заказ продуктов
+        /// </summary>
         private void InitList()
         {
             productsList.ItemsSource = _currentOrderProducts;
@@ -67,7 +78,11 @@ namespace DemoApp
         {
             _currentOrder.PickupPointID = (from pp in dbmodel.PickupPoint where pp.Address == PointOfIssueComboBox.SelectedValue select pp.PickupPointID).FirstOrDefault();
         }
-
+        /// <summary>
+        /// Удаление 1 элемента выбранного продукта в заказе
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
         {
             Button button = (Button)sender;
@@ -92,7 +107,11 @@ namespace DemoApp
                 }
             }
         }
-
+        /// <summary>
+        /// Добавление +1 элемента в заказе
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             using (var db = new user25Entities1())
@@ -106,7 +125,9 @@ namespace DemoApp
                 InitList();
             }
         }
-
+        /// <summary>
+        /// Инициализация выбранного продукта в заказе
+        /// </summary>
         private void InitProductOrder()
         {
             var orderprod = new OrderProduct();
@@ -123,6 +144,7 @@ namespace DemoApp
                 }
             }
         }
+
         private Product GetProductById(int prodId)
         {
             foreach (var prod in dbmodel.Product)
@@ -142,7 +164,9 @@ namespace DemoApp
             clientWindow.Show();
             Close();
         }
-
+        /// <summary>
+        /// Конфигурация заказа
+        /// </summary>
         private void Configure()
         {
             var itemsInStock = 0;
@@ -153,6 +177,7 @@ namespace DemoApp
                     itemsInStock++;
                 }
             }
+            ///Добавление времени к дате доставке
             if (itemsInStock == _currentOrderProducts.Count)
             {
                 _currentOrder.OrderDeliveryDate = _currentOrder.OrderCreateDate.AddDays(3);
@@ -169,7 +194,7 @@ namespace DemoApp
 
             Date.Content = _currentOrder.OrderDeliveryDate;
             orderSum = 0;
-
+            ///Счёт суммы заказа с учётом скидок
             foreach (var item in _currentOrderProducts)
             {
                 foreach (var product in dbmodel.Product)
@@ -182,7 +207,11 @@ namespace DemoApp
             }
             TotalLabel.Content = "Сумма заказа: " + orderSum.ToString();
         }
-
+        /// <summary>
+        /// Подтверждение заказа
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ConfirmButton_Click(object sender, RoutedEventArgs e)
         {
             using (var db = new user25Entities1())
@@ -198,6 +227,42 @@ namespace DemoApp
                 MessageBox.Show("Заказ подтвержден!");
                 return;
             }
+        }
+        /// <summary>
+        /// Создание пдф-чека
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ConvertToPdfButton_Click(object sender, RoutedEventArgs e)
+        {
+            ///Создание нового документа
+            Document document = new Document();
+            Section section = document.AddSection();
+            Spire.Doc.Documents.Paragraph par = section.AddParagraph();
+            ///Если пользователь не авторизован
+            if (_currentUser.UserID == 0)
+            {
+                par.Text = "Guest";
+            }
+            else
+            {
+                par.Text = _currentUser.UserName;
+            }
+            Spire.Doc.Documents.Paragraph par1 = section.AddParagraph();
+            TextRange text = par1.AppendText($"Код получения заказа: {_currentOrder.OrderGetCode}");
+            text.CharacterFormat.FontSize = 20;
+            text.CharacterFormat.Bold = true;
+            Spire.Doc.Documents.Paragraph par2 = section.AddParagraph();
+            par2.Text = $"Дата заказа: {_currentOrder.OrderCreateDate}\n" +
+                $"Сумма заказа: {orderSum}\n";
+            Paragraph par3 = section.AddParagraph();
+            par3.Text = "Состав заказа: \n";
+            foreach (var item in _currentOrderProducts)
+            {
+                par3.Text += $"{item.Product.ProductName} : {item.Count}\n" + "\n";
+            }
+            document.SaveToFile("TheBill.pdf", FileFormat.PDF);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = "TheBill.pdf", UseShellExecute = true });
         }
     }
 }

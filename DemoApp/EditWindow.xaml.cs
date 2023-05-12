@@ -34,7 +34,9 @@ namespace DemoApp
             DataInitMethod();
             InitImage();
         }
-
+        /// <summary>
+        /// Загрузка данных выбранного ранее продукта в текстбоксы
+        /// </summary>
         private void DataInitMethod()
         {
             if (_currentProduct != null)
@@ -52,7 +54,9 @@ namespace DemoApp
                 CategoryIdComboBox.Text = Convert.ToString(_currentProduct.ProductCategory);
             }
         }
-
+        /// <summary>
+        /// Метод заполнения комбобоксов
+        /// </summary>
         private void LoadComboBoxes()
         {
             using (var db = new user25Entities1())
@@ -85,6 +89,9 @@ namespace DemoApp
             }
         }
 
+        /// <summary>
+        /// Метод инициализации картинки
+        /// </summary>
         private void InitImage()
         {
             BitmapImage imageSource = new BitmapImage();
@@ -141,6 +148,10 @@ namespace DemoApp
                 MessageBox.Show("Введите действ. скидку!", "Ошибка");
             if (string.IsNullOrEmpty(AmountInStockTextBox.Text))
                 MessageBox.Show("Введите количество!", "Ошибка");
+            if (Convert.ToInt16(MaxDiscountTextBox.Text) < Convert.ToInt16(DiscountTextBox.Text))
+                MessageBox.Show("Максимальная скидка не может быть меньше действующей!", "Ошибка");
+            if (Convert.ToInt16(AmountInStockTextBox.Text) <= 0)
+                MessageBox.Show("Товар можно добавить только если он есть на складе!", "Ошибка");
             if (errors.Length > 0)
             {
                 MessageBox.Show(errors.ToString());
@@ -161,6 +172,11 @@ namespace DemoApp
             }
         }
 
+        /// <summary>
+        /// Методы передачи данных из комбобоксов в редактируемый продукт
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UnitTypeIdComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _currentProduct.UnitType = (from ut in dbmodel.UnitType where ut.UnitTypeName == UnitTypeIdComboBox.Text select ut).FirstOrDefault();
@@ -181,6 +197,11 @@ namespace DemoApp
             _currentProduct.ProductManufacturer = (from pm in dbmodel.ProductManufacturer where pm.ProductManufacturerName == ManufacturerComboBox.Text select pm).FirstOrDefault();
         }
 
+        /// <summary>
+        /// Редактирование картинки
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ImageButoon_Click(object sender, RoutedEventArgs e)
         {
             var ofd = new OpenFileDialog();

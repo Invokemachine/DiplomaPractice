@@ -20,6 +20,7 @@
             <Label Content="Новый заказ" HorizontalAlignment="Center"/>
         </StackPanel>
         <Button x:Name="BackButton" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Назад" Click="BackButton_Click"/>
+        <Button x:Name="ConvertToPdfButton" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Column="1" Content="Чек в .pdf" Click="ConvertToPdfButton_Click"/>
         <ListView Grid.Column="0" Grid.Row ="1" x:Name="productsList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" d:ItemsSource="{d:SampleData ItemCount=4}">
             <ListView.ItemTemplate>
                 <DataTemplate>

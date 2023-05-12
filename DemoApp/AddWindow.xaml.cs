@@ -104,6 +104,10 @@ namespace DemoApp
                 MessageBox.Show("Введите действ. скидку!", "Ошибка");
             if (string.IsNullOrEmpty(AmountInStockTextBox.Text))
                 MessageBox.Show("Введите количество!", "Ошибка");
+            if (Convert.ToInt16(MaxDiscountTextBox.Text) < Convert.ToInt16(DiscountTextBox.Text))
+                MessageBox.Show("Максимальная скидка не может быть меньше действующей!", "Ошибка");
+            if (Convert.ToInt16(AmountInStockTextBox.Text) <= 0)
+                MessageBox.Show("Товар можно добавить только если он есть на складе!", "Ошибка");
             if (errors.Length > 0)
             {
                 MessageBox.Show(errors.ToString());

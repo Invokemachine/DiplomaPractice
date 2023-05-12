@@ -16,9 +16,6 @@ using System.Windows.Shapes;
 
 namespace DemoApp
 {
-    /// <summary>
-    /// Логика взаимодействия для ClientWindow.xaml
-    /// </summary>
     public partial class ClientWindow : Window
     {
         private User _currentUser = new User();
@@ -32,6 +29,8 @@ namespace DemoApp
         {
             InitializeComponent();
             productList = dbmodel.Product.ToList();
+
+            ///Инициализация фильтров
             DiscountFilter.ItemsSource = new List<string>()
             {
                 "0-10%","10-15%","15-100%", "Все диапазоны"
@@ -41,7 +40,7 @@ namespace DemoApp
                 "По возрастанию", "По убыванию"
             };
             ProductsList.ItemsSource = productList;
-
+            ///Вывод картинок в список
             foreach (Product product in productList)
             {
                 product.ProductPhoto = $"Resources/{product.ProductPhoto}";
@@ -54,15 +53,23 @@ namespace DemoApp
                     }
                 }
             }
+            ///Если пользователь уже создал заказ и он не пустой
             _orderExists = orderExists;
             if (order != null)
+            {
                 _currentOrder = order;
-
+            }
+            ///Кнопка заказов видима только для клиентов и гостей
+            if (_currentUser.RoleID == 1 || _currentUser.RoleID == 0)
+            {
+                NewOrderButton.Visibility = Visibility.Visible;
+            }
             if (user != null)
             {
                 _currentUser = user;
             }
             updateRecordAmount();
+            ///Скрытие кнопок добавления, удаления и редактирования товаров для клиентов
             if (_currentUser != null)
             {
                 if (_currentUser.RoleID == 2 || _currentUser.RoleID == 3)
@@ -80,7 +87,9 @@ namespace DemoApp
                 _currentOrder.UserID = null;
             }
         }
-
+        /// <summary>
+        /// Метод для блокировки и разблокировки кнопок
+        /// </summary>
         private void EnableButtons()
         {
             if (_currentUser != null && _currentUser.RoleID == 2 && ProductsList.SelectedItem != null)
@@ -101,7 +110,11 @@ namespace DemoApp
                 EditButton.IsEnabled = false;
             }
         }
-
+        /// <summary>
+        /// Фильтр по цене
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PriceFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             EnableButtons();
@@ -122,7 +135,11 @@ namespace DemoApp
                     }
             }
         }
-
+        /// <summary>
+        /// Фильтр по скидкам
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DiscountFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             EnableButtons();
@@ -160,11 +177,18 @@ namespace DemoApp
                     }
             }
         }
+        /// <summary>
+        /// Метод для обновления количества элементов в списке
+        /// </summary>
         private void updateRecordAmount()
         {
             recordAmountLabel.Content = $"{ProductsList.Items.Count} из {productList.Count}";
         }
-
+        /// <summary>
+        /// Поиск по названию
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             EnableButtons();
@@ -200,16 +224,21 @@ namespace DemoApp
             Close();
         }
 
+        /// <summary>
+        /// Удаление
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
-            var driversForDeleting = ProductsList.SelectedItems.Cast<Product>().ToList();
+            var elements = ProductsList.SelectedItems.Cast<Product>().ToList();
 
-            if (MessageBox.Show($"Вы точно хотите удалить следующие {driversForDeleting.Count} элементов?", "Внимание!",
+            if (MessageBox.Show($"Вы точно хотите удалить следующие {elements.Count} элементов?", "Внимание!",
                 MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 try
                 {
-                    dbmodel.Product.RemoveRange(driversForDeleting);
+                    dbmodel.Product.RemoveRange(elements);
                     dbmodel.SaveChanges();
                     MessageBox.Show("Данные удалены!", "Окно оповещений");
                     ProductsList.ItemsSource = dbmodel.Product.ToList();
@@ -227,7 +256,11 @@ namespace DemoApp
             orderWindow.Show();
             Close();
         }
-
+        /// <summary>
+        /// Добавление к заказу через контекстное меню
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AddToOrderButton_Click(object sender, RoutedEventArgs e)
         {
             using (var db = new user25Entities1())
@@ -236,6 +269,7 @@ namespace DemoApp
                 var product = new Product();
                 var foundOrder = false;
 
+                ///Поиск товара
                 foreach (var item in dbmodel.Product)
                 {
                     if (item == ProductsList.SelectedItem)
@@ -243,7 +277,7 @@ namespace DemoApp
                         product = item;
                     }
                 }
-
+                ///Проверка на наличие уже созданного ранее заказа
                 foreach (var ord in dbmodel.Order)
                 {
                     if (ord.UserID == _currentUser.UserID && ord.OrderStatusID == 1)
@@ -262,6 +296,7 @@ namespace DemoApp
                         }
                     }
                 }
+                ///Заполнение существующего заказа
                 if (foundOrder)
                 {
                     foreach (var ordprod in db.OrderProduct.ToList())
@@ -270,16 +305,16 @@ namespace DemoApp
                         {
                             ordprod.Count++;
                             db.Entry(ordprod).State = System.Data.Entity.EntityState.Modified;
-                            MessageBox.Show("Товар успешно добавлен в корзину!");
+                            MessageBox.Show("Товар успешно добавлен в корзину!", "Внимание");
                             return;
                         }
                     }
                     db.OrderProduct.Add(new OrderProduct() { OrderID = _currentOrder.OrderID, Count = 1, ProductID = product.ProductID });
                     db.SaveChanges();
-                    MessageBox.Show("Товар успешно добавлен в корзину!");
+                    MessageBox.Show("Товар успешно добавлен в корзину!", "Внимание");
                     return;
                 }
-                if (foundOrder)
+                if (foundOrder == true)
                 {
                     foreach (var ordprod in dbmodel.OrderProduct.ToList())
                     {
@@ -288,17 +323,18 @@ namespace DemoApp
                             ordprod.Count++;
                             db.Entry(ordprod).State = EntityState.Modified;
                             db.SaveChanges();
-                            MessageBox.Show("Товар успешно добавлен в корзину!");
+                            MessageBox.Show("Товар успешно добавлен в корзину!", "Внимание");
                             return;
                         }
                     }
 
                     db.OrderProduct.Add(new OrderProduct() { OrderID = _currentOrder.OrderID, Count = 1, ProductID = product.ProductID });
                     db.SaveChanges();
-                    MessageBox.Show("Товар успешно добавлен в корзину!");
+                    MessageBox.Show("Товар успешно добавлен в корзину!", "Внимание");
                     return;
                 }
 
+                ///Проверка на авторизованность пользователя для передачи последующей передачи null
                 int? userId = _currentUser.UserID;
                 if (_currentUser.UserID == 0)
                     userId = null;
@@ -308,12 +344,10 @@ namespace DemoApp
                     OrderCreateDate = DateTime.Now,
                     OrderStatusID = 1,
                     UserID = userId,
-
                     OrderGetCode = db.Order.OrderByDescending(o => o.OrderGetCode).First().OrderGetCode + 1,
                     PickupPointID = 1,
                     OrderDeliveryDate = DateTime.Now
                 };
-
                 db.Order.Add(order);
                 db.SaveChanges();
 
@@ -328,7 +362,7 @@ namespace DemoApp
 
                 _currentOrder = order;
                 _orderExists = true;
-                MessageBox.Show("Заказ создан, товар успешно добавлен!");
+                MessageBox.Show("Заказ создан, товар успешно добавлен!", "Внимание");
                 return;
             }
         }
