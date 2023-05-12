@@ -33,12 +33,18 @@
         <WrapPanel Grid.Row="2" Background="#76e383" Grid.ColumnSpan="2">
             <Label Name="recordAmountLabel" Content=" "/>
             <Button x:Name="DeleteButton" Content="Удалить товар" Click="DeleteButton_Click" IsEnabled="False"/>
+            <Button x:Name="NewOrderButton" Content="Новый заказ" Click="NewOrderButton_Click"/>
         </WrapPanel>
         <StackPanel Grid.Column="1" HorizontalAlignment="Right">
             <Button x:Name="AddButton" Content="Добавить товар" Click="AddButton_Click"/>
             <Button x:Name="EditButton" Content="Редактировать" Click="EditButton_Click" IsEnabled="False"/>
         </StackPanel>
         <ListView ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" x:Name="ProductsList" Grid.Row="1" Grid.ColumnSpan="2" SelectionChanged="ProductsList_SelectionChanged">
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <Button x:Name="AddToOrderButton" Content="Добавить к заказу" Click="AddToOrderButton_Click"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="Black" BorderThickness="1">

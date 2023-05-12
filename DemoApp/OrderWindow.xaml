@@ -1,0 +1,54 @@
+﻿<Window x:Class="DemoApp.OrderWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DemoApp"
+        mc:Ignorable="d"
+        Title="OrderWindow" Height="500" Width="700">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.15*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="0.15*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.ColumnSpan="2" Background="#76e383">
+            <Label Content="Новый заказ" HorizontalAlignment="Center"/>
+        </StackPanel>
+        <Button x:Name="BackButton" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Назад" Click="BackButton_Click"/>
+        <ListView Grid.Column="0" Grid.Row ="1" x:Name="productsList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" d:ItemsSource="{d:SampleData ItemCount=4}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="ProductNameLabel" Height="25" Margin="3" Width="auto" Text="{Binding Product.ProductName}" IsEnabled="false" Grid.ColumnSpan="3" Grid.Row="0"/>
+                        <Button x:Name="RemoveButton" Height="35" Content="-" Margin="3" HorizontalContentAlignment="Center" Grid.Row="1" Width="50" Grid.Column="0" Click="RemoveButton_Click"/>
+                        <Label x:Name="QuantityLabel" FontSize="15" HorizontalContentAlignment="Center" Content="{Binding Count}" Grid.Column="1" Grid.Row="1" Height="40" Margin="5,5,5,0" VerticalAlignment="Top"/>
+                        <Button x:Name="AddButton" Height="35" HorizontalContentAlignment="Center" Width="50" Content="+" Grid.Row="1" Grid.Column="2" Click="AddButton_Click"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Button x:Name="ConfirmButton" Content="Подвердить" Grid.Column="0" Grid.Row="2" Height="35" FontSize="15" Click="ConfirmButton_Click"/>
+        <Grid Grid.Column="1" Grid.Row="1">
+            <StackPanel>
+                <Label Content="Пункт выдачи:"/>
+                <ComboBox x:Name="PointOfIssueComboBox" SelectionChanged="PointOfIssueComboBox_SelectionChanged"/>
+                <Label x:Name="Date" Content="Дата выдачи:"/>
+                <Label x:Name="TotalLabel" Content="Сумма заказа:"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

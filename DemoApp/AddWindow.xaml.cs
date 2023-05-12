@@ -24,7 +24,7 @@ namespace DemoApp
     {
         user25Entities1 dbmodel = new user25Entities1();
         List<Product> productList = new List<Product>();
-        public Product _currentProduct;
+        Product _currentProduct;
         User _currentUser;
 
         public AddWindow(Product product, User currentUser)

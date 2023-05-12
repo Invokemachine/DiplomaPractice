@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,16 +22,17 @@ namespace DemoApp
     public partial class ClientWindow : Window
     {
         private User _currentUser = new User();
+        private bool _orderExists;
         public static Product _currentProduct;
         user25Entities1 dbmodel = new user25Entities1();
         List<Product> productList = new List<Product>();
+        Order _currentOrder = new Order();
 
-        public ClientWindow(User user)
+        public ClientWindow(User user, Order order = null, bool orderExists = false)
         {
             InitializeComponent();
-
             productList = dbmodel.Product.ToList();
-                DiscountFilter.ItemsSource = new List<string>()
+            DiscountFilter.ItemsSource = new List<string>()
             {
                 "0-10%","10-15%","15-100%", "Все диапазоны"
             };
@@ -41,7 +44,8 @@ namespace DemoApp
 
             foreach (Product product in productList)
             {
-                product.ProductPhoto = $"/Resources/{product.ProductPhoto}";
+                product.ProductPhoto = $"Resources/{product.ProductPhoto}";
+
                 foreach (ProductManufacturer manufacturer in dbmodel.ProductManufacturer)
                 {
                     if (manufacturer.ProductManufacturerID == product.ProductManufacturerID)
@@ -50,23 +54,45 @@ namespace DemoApp
                     }
                 }
             }
-            _currentUser = user;
-            updateRecordAmount();
-            if(_currentUser != null)
+            _orderExists = orderExists;
+            if (order != null)
+                _currentOrder = order;
+
+            if (user != null)
             {
-                if (_currentUser.RoleID == 2)
+                _currentUser = user;
+            }
+            updateRecordAmount();
+            if (_currentUser != null)
+            {
+                if (_currentUser.RoleID == 2 || _currentUser.RoleID == 3)
                     AddButton.IsEnabled = true;
-                else
-                    AddButton.IsEnabled = false;
+                else if (_currentUser.RoleID == 1)
+                {
+                    AddButton.Visibility = Visibility.Hidden;
+                    EditButton.Visibility = Visibility.Hidden;
+                    DeleteButton.Visibility = Visibility.Hidden;
+                    NewOrderButton.Visibility = Visibility.Visible;
+                }
+            }
+            if (_currentUser.UserID == 0)
+            {
+                _currentOrder.UserID = null;
             }
         }
 
         private void EnableButtons()
         {
-            if (_currentUser.RoleID == 2 && ProductsList.SelectedItem != null)
+            if (_currentUser != null && _currentUser.RoleID == 2 && ProductsList.SelectedItem != null)
             {
                 DeleteButton.IsEnabled = true;
                 EditButton.IsEnabled = true;
+            }
+            else if (_currentUser == null)
+            {
+                AddButton.IsEnabled = false;
+                DeleteButton.IsEnabled = false;
+                EditButton.IsEnabled = false;
             }
             else
             {
@@ -101,37 +127,37 @@ namespace DemoApp
         {
             EnableButtons();
             productList = dbmodel.Product.ToList();
-			switch (DiscountFilter.SelectedIndex)
-			{
-				case 0:
-					{
-						productList = dbmodel.Product.Where(p => p.ProductDiscountAmount < 10).ToList();
+            switch (DiscountFilter.SelectedIndex)
+            {
+                case 0:
+                    {
+                        productList = dbmodel.Product.Where(p => p.ProductDiscountAmount < 10).ToList();
                         ProductsList.ItemsSource = productList;
                         updateRecordAmount();
-						break;
-					}
-				case 1:
-					{
-						productList = dbmodel.Product.Where(p => p.ProductDiscountAmount > 10 && p.ProductDiscountAmount < 15).ToList();
+                        break;
+                    }
+                case 1:
+                    {
+                        productList = dbmodel.Product.Where(p => p.ProductDiscountAmount > 10 && p.ProductDiscountAmount < 15).ToList();
                         ProductsList.ItemsSource = productList;
 
                         updateRecordAmount();
-						break;
-					}
-				case 2:
-					{
-						productList = dbmodel.Product.Where(p => p.ProductDiscountAmount >= 15).ToList();
+                        break;
+                    }
+                case 2:
+                    {
+                        productList = dbmodel.Product.Where(p => p.ProductDiscountAmount >= 15).ToList();
                         ProductsList.ItemsSource = productList;
                         updateRecordAmount();
-						break;
-					}
+                        break;
+                    }
                 case 3:
-					{
-						productList = dbmodel.Product.ToList();
+                    {
+                        productList = dbmodel.Product.ToList();
                         ProductsList.ItemsSource = productList;
                         updateRecordAmount();
-						break;
-					}
+                        break;
+                    }
             }
         }
         private void updateRecordAmount()
@@ -192,6 +218,118 @@ namespace DemoApp
                 {
                     MessageBox.Show(ex.Message.ToString());
                 }
+            }
+        }
+
+        private void NewOrderButton_Click(object sender, RoutedEventArgs e)
+        {
+            OrderWindow orderWindow = new OrderWindow(_currentUser, _currentOrder);
+            orderWindow.Show();
+            Close();
+        }
+
+        private void AddToOrderButton_Click(object sender, RoutedEventArgs e)
+        {
+            using (var db = new user25Entities1())
+            {
+                Order order;
+                var product = new Product();
+                var foundOrder = false;
+
+                foreach (var item in dbmodel.Product)
+                {
+                    if (item == ProductsList.SelectedItem)
+                    {
+                        product = item;
+                    }
+                }
+
+                foreach (var ord in dbmodel.Order)
+                {
+                    if (ord.UserID == _currentUser.UserID && ord.OrderStatusID == 1)
+                    {
+                        _currentOrder = ord;
+                        foundOrder = true;
+                        break;
+                    }
+                    if (_orderExists)
+                    {
+                        if (ord.OrderID == _currentOrder.OrderID)
+                        {
+                            _currentOrder = ord;
+                            foundOrder = true;
+                            break;
+                        }
+                    }
+                }
+                if (foundOrder)
+                {
+                    foreach (var ordprod in db.OrderProduct.ToList())
+                    {
+                        if (ordprod.ProductID == product.ProductID && ordprod.OrderID == _currentOrder.OrderID)
+                        {
+                            ordprod.Count++;
+                            db.Entry(ordprod).State = System.Data.Entity.EntityState.Modified;
+                            MessageBox.Show("Товар успешно добавлен в корзину!");
+                            return;
+                        }
+                    }
+                    db.OrderProduct.Add(new OrderProduct() { OrderID = _currentOrder.OrderID, Count = 1, ProductID = product.ProductID });
+                    db.SaveChanges();
+                    MessageBox.Show("Товар успешно добавлен в корзину!");
+                    return;
+                }
+                if (foundOrder)
+                {
+                    foreach (var ordprod in dbmodel.OrderProduct.ToList())
+                    {
+                        if (ordprod.ProductID == product.ProductID && ordprod.OrderID == _currentOrder.OrderID)
+                        {
+                            ordprod.Count++;
+                            db.Entry(ordprod).State = EntityState.Modified;
+                            db.SaveChanges();
+                            MessageBox.Show("Товар успешно добавлен в корзину!");
+                            return;
+                        }
+                    }
+
+                    db.OrderProduct.Add(new OrderProduct() { OrderID = _currentOrder.OrderID, Count = 1, ProductID = product.ProductID });
+                    db.SaveChanges();
+                    MessageBox.Show("Товар успешно добавлен в корзину!");
+                    return;
+                }
+
+                int? userId = _currentUser.UserID;
+                if (_currentUser.UserID == 0)
+                    userId = null;
+
+                order = new Order()
+                {
+                    OrderCreateDate = DateTime.Now,
+                    OrderStatusID = 1,
+                    UserID = userId,
+
+                    OrderGetCode = db.Order.OrderByDescending(o => o.OrderGetCode).First().OrderGetCode + 1,
+                    PickupPointID = 1,
+                    OrderDeliveryDate = DateTime.Now
+                };
+
+                db.Order.Add(order);
+                db.SaveChanges();
+
+                var orderProduct = new OrderProduct()
+                {
+                    OrderID = order.OrderID,
+                    ProductID = product.ProductID,
+                    Count = 1
+                };
+                db.OrderProduct.Add(orderProduct);
+                db.SaveChanges();
+
+                _currentOrder = order;
+                _orderExists = true;
+                MessageBox.Show("Заказ создан, товар успешно добавлен!");
+                return;
             }
         }
     }

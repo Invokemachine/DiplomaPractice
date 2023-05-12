@@ -11,7 +11,7 @@
             <RowDefinition Height="0.1*"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <WrapPanel  Background="#76e383">
+        <WrapPanel Background="#76e383">
             <Button x:Name="BackButton" Content="Назад" HorizontalAlignment="Left" Click="BackButton_Click"/>
             <Label Content="Редактирование" HorizontalAlignment="Center"/>
         </WrapPanel>
