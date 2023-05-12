@@ -71,22 +71,25 @@ namespace DemoApp
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
         {
             Button button = (Button)sender;
-            if (_currentOrderProduct.Count >= 0)
+            using (var db = new user25Entities1())
             {
-                _currentOrderProduct = button.DataContext as OrderProduct;
-                _currentOrderProduct.Count--;
-                dbmodel.Entry(_currentOrderProduct).State = EntityState.Modified;
-                dbmodel.SaveChanges();
-                InitProductOrder();
-                InitList();
-            }
-            else
-            {
-                _currentOrderProduct.Count = 0;
-                dbmodel.Entry(_currentOrderProduct).State = EntityState.Modified;
-                dbmodel.SaveChanges();
-                InitProductOrder();
-                InitList();
+                if (_currentOrderProduct.Count > 0)
+                {
+                    _currentOrderProduct = button.DataContext as OrderProduct;
+                    _currentOrderProduct.Count--;
+                    db.Order.AddOrUpdate(_currentOrder);
+                    db.SaveChanges();
+                    InitProductOrder();
+                    InitList();
+                }
+                else
+                {
+                    _currentOrderProduct.Count = 0;
+                    db.Order.AddOrUpdate(_currentOrder);
+                    db.SaveChanges();
+                    InitProductOrder();
+                    InitList();
+                }
             }
         }
 
@@ -97,8 +100,7 @@ namespace DemoApp
                 Button button = (Button)sender;
                 _currentOrderProduct = button.DataContext as OrderProduct;
                 _currentOrderProduct.Count++;
-                db.SaveChanges();
-                db.Entry(_currentOrderProduct).State = EntityState.Modified;
+                db.Order.AddOrUpdate(_currentOrder);
                 db.SaveChanges();
                 InitProductOrder();
                 InitList();
@@ -161,8 +163,7 @@ namespace DemoApp
             }
             using (var db = new user25Entities1())
             {
-                db.Order.Attach(_currentOrder);
-                db.Entry(_currentOrder).State = EntityState.Modified;
+                db.Order.AddOrUpdate(_currentOrder);
                 db.SaveChanges();
             }
 
@@ -192,8 +193,7 @@ namespace DemoApp
                     return;
                 }
                 _currentOrder.OrderStatusID = 2;
-                db.Order.Attach(_currentOrder);
-                db.Entry(_currentOrder).State = EntityState.Modified;
+                db.Order.AddOrUpdate(_currentOrder);
                 db.SaveChanges();
                 MessageBox.Show("Заказ подтвержден!");
                 return;
